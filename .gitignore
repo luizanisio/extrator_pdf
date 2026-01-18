@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# pastas de testes
+src/pdfs
+src/textos
+src/logs
+src/config_extracao.yaml

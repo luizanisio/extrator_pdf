@@ -1,0 +1,23 @@
+# Configuração para extração em lote de PDFs
+# Execute com: python extrair_pdf.py config_extracao.yaml
+
+# Pasta contendo os arquivos PDF (obrigatório)
+pasta_origem: ./pdfs_exemplos
+
+# Pasta para salvar os arquivos extraídos (se vazio, usa pasta_origem)
+pasta_destino: ./textos_exemplos
+
+# Pasta para salvar os logs (se vazio, usa pasta_destino)
+pasta_log: ./logs_exemplos
+
+# Processar subpastas recursivamente? (padrão: true)
+subpastas: true
+
+# Sobrescrever arquivos existentes? (padrão: false)
+sobrescrever: false
+
+# Ignorar erros de dependências opcionais (libGL, tesseract)?
+# Se true: continua a extração sem OCR/detecção de tabelas, registra avisos no log
+# Se false: interrompe a execução com erro se dependências estiverem faltando
+# (padrão: true)
+ignorar_dependencias: true

@@ -1,0 +1,6 @@
+# Dependências para o Extrator de PDF
+# Instale com: pip install -r requirements.txt
+
+docling
+pyyaml
+regex
