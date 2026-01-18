@@ -171,6 +171,7 @@ class ExtrairPdf:
     
     def __init__(self, arquivo_pdf: str, pasta_destino: str = None, 
                  pasta_log: str = None, ignorar_dependencias: bool = True,
+                 ocr: bool = True, detectar_tabelas: bool = True, 
                  gerar_dicas: bool = True):
         """
         Inicializa o extrator de PDF.
@@ -179,11 +180,15 @@ class ExtrairPdf:
             arquivo_pdf: Caminho do arquivo PDF
             pasta_destino: Pasta de destino para os arquivos gerados
             pasta_log: Pasta para os logs (se vazia, usa pasta_destino)
-            ignorar_dependencias: Se True, ignora erros de dependências opcionais
+            ignorar_dependencias: Se True, ignora erros de dependências opcionais genéricas
+            ocr: Se True, usa OCR (requer Tesseract). Se False, não usa OCR.
+            detectar_tabelas: Se True, detecta estrutura de tabelas (requer libGL/OpenCV).
             gerar_dicas: Se True, gera arquivo de dicas de ambiente
         """
         self.arquivo_pdf = Path(arquivo_pdf).resolve()
         self.ignorar_dependencias = ignorar_dependencias
+        self.ocr = ocr
+        self.detectar_tabelas = detectar_tabelas
         self.gerar_dicas = gerar_dicas
         
         # Define pasta de destino
@@ -226,7 +231,7 @@ class ExtrairPdf:
     def _verificar_dependencias(self) -> bool:
         """
         Verifica se as dependências estão disponíveis.
-        Retorna False se dependências críticas estiverem faltando e ignorar_dependencias=False.
+        Retorna False se dependências críticas estiverem faltando.
         """
         if not DOCLING_DISPONIVEL:
             self._adicionar_log("ERRO CRÍTICO: O pacote 'docling' não está instalado.")
@@ -241,20 +246,27 @@ class ExtrairPdf:
             if arquivo_dicas:
                  self._adicionar_log(f"Informações do ambiente salvas em: {arquivo_dicas}")
 
-        
-        if not deps['libgl']:
-            msg = "AVISO: libGL/OpenCV não disponível - detecção de tabelas desabilitada"
-            self._adicionar_log(msg)
-            if not self.ignorar_dependencias:
-                self._adicionar_log("ERRO: Dependência opcional faltando e ignorar_dependencias=False")
+        # Lógica de Tabelas (libGL)
+        if self.detectar_tabelas:
+            if not deps['libgl']:
+                self._adicionar_log("ERRO: Detecção de tabelas habilitada (detectar_tabelas: true) mas libGL/OpenCV não encontrado.")
+                self._adicionar_log("Solução 1: Instale dependências gráficas (veja dicas_ambiente.md)")
+                self._adicionar_log("Solução 2: Desabilite Tabelas no config (detectar_tabelas: false)")
                 return False
-        
-        if not deps['tesseract']:
-            msg = "AVISO: Tesseract não disponível - OCR desabilitado"
-            self._adicionar_log(msg)
-            if not self.ignorar_dependencias:
-                self._adicionar_log("ERRO: Dependência opcional faltando e ignorar_dependencias=False")
+        else:
+            if not deps['libgl']:
+                 self._adicionar_log("AVISO: libGL/OpenCV não encontrado, mas Tabelas está desabilitado.")
+
+        # Lógica do OCR
+        if self.ocr:
+            if not deps['tesseract']:
+                self._adicionar_log("ERRO: OCR habilitado (ocr: true) mas Tesseract não encontrado.")
+                self._adicionar_log("Solução 1: Instale o Tesseract (veja dicas_ambiente.md)")
+                self._adicionar_log("Solução 2: Desabilite o OCR no config (ocr: false)")
                 return False
+        else:
+            if not deps['tesseract']:
+                 self._adicionar_log("AVISO: Tesseract não encontrado, mas OCR está desabilitado.")
         
         return True
     
@@ -306,13 +318,18 @@ class ExtrairPdf:
             deps = verificar_dependencias_opcionais()
             
             pipeline_options = PdfPipelineOptions()
-            pipeline_options.do_ocr = bool(deps['tesseract'])
-            pipeline_options.do_table_structure = bool(deps['libgl'])
+            pipeline_options.do_ocr = self.ocr and bool(deps['tesseract'])
+            pipeline_options.do_table_structure = self.detectar_tabelas and bool(deps['libgl'])
             
-            if deps['tesseract']:
-                self._adicionar_log("OCR habilitado (tesseract disponível)")
-            if deps['libgl']:
-                self._adicionar_log("Detecção de tabelas habilitada (libGL disponível)")
+            if pipeline_options.do_ocr:
+                self._adicionar_log("OCR habilitado")
+            else:
+                self._adicionar_log("OCR desabilitado")
+                
+            if pipeline_options.do_table_structure:
+                self._adicionar_log("Detecção de tabelas habilitada")
+            else:
+                self._adicionar_log("Detecção de tabelas desabilitada")
             
             converter = DocumentConverter(
                 format_options={
@@ -466,7 +483,8 @@ class ProcessarPasta:
     def __init__(self, config_ou_yaml: str = None, pasta_origem: str = None, 
                  pasta_destino: str = None, pasta_log: str = None,
                  subpastas: bool = True, sobrescrever: bool = False, 
-                 ignorar_dependencias: bool = True):
+                 ignorar_dependencias: bool = True, ocr: bool = True,
+                 detectar_tabelas: bool = True):
         """
         Inicializa o processador de pasta.
         
@@ -478,8 +496,12 @@ class ProcessarPasta:
             subpastas: Processar subpastas (padrão True)
             sobrescrever: Sobrescrever arquivos existentes (padrão False)
             ignorar_dependencias: Ignorar erros de dependências opcionais (padrão True)
+            ocr: Habilitar OCR (padrão True)
+            detectar_tabelas: Habilitar detecção de tabelas (padrão True)
         """
         self.ignorar_dependencias = ignorar_dependencias
+        self.ocr = ocr
+        self.detectar_tabelas = detectar_tabelas
         self.pasta_log = None
         
         # Se recebeu um arquivo YAML, carrega as configurações
@@ -538,6 +560,8 @@ class ProcessarPasta:
         self.subpastas = config.get('subpastas', True)
         self.sobrescrever = config.get('sobrescrever', False)
         self.ignorar_dependencias = config.get('ignorar_dependencias', True)
+        self.ocr = config.get('ocr', True)
+        self.detectar_tabelas = config.get('detectar_tabelas', True)
         
     def _adicionar_log(self, mensagem: str):
         """Adiciona uma mensagem ao log geral."""
@@ -579,6 +603,8 @@ class ProcessarPasta:
         self._adicionar_log(f"Pasta de destino: {self.pasta_destino}")
         self._adicionar_log(f"Incluir subpastas: {self.subpastas}")
         self._adicionar_log(f"Sobrescrever existentes: {self.sobrescrever}")
+        self._adicionar_log(f"Utilizar OCR: {self.ocr}")
+        self._adicionar_log(f"Detectar Tabelas: {self.detectar_tabelas}")
         self._adicionar_log(f"Ignorar dependências opcionais: {self.ignorar_dependencias}")
         self._adicionar_log("-" * 60)
         
@@ -591,11 +617,23 @@ class ProcessarPasta:
         if arquivo_dicas:
             self._adicionar_log(f"Informações do ambiente salvas em: {arquivo_dicas}")
 
-        
-        if not self.ignorar_dependencias and (not deps['libgl'] or not deps['tesseract']):
-            self._adicionar_log("ERRO: Dependências opcionais faltando e ignorar_dependencias=False")
+        # Validação do OCR 
+        if self.ocr and not deps['tesseract']:
+            self._adicionar_log("ERRO: OCR habilitado mas Tesseract não encontrado.")
+            self._adicionar_log("Interrompendo processamento. Instale o Tesseract ou use 'ocr: false'.")
             self._salvar_log()
             return self._gerar_estatisticas()
+        
+        # Validação de Tabelas
+        if self.detectar_tabelas and not deps['libgl']:
+            self._adicionar_log("ERRO: Detecção de tabelas habilitada mas libGL/OpenCV não encontrado.")
+            self._adicionar_log("Interrompendo processamento. Instale libGL ou use 'detectar_tabelas: false'.")
+            self._salvar_log()
+            return self._gerar_estatisticas()
+        
+        if not self.ignorar_dependencias and (not deps['libgl'] or not deps['tesseract']):
+            # Fallback legacy ou generic checks
+            pass
         
         self._adicionar_log("-" * 60)
         
@@ -649,6 +687,8 @@ class ProcessarPasta:
                     str(pasta_destino_arquivo),
                     pasta_log=str(pasta_log_arquivo),
                     ignorar_dependencias=self.ignorar_dependencias,
+                    ocr=self.ocr,
+                    detectar_tabelas=self.detectar_tabelas,
                     gerar_dicas=False  # Já gerado na pasta principal
                 )
                 sucesso = extrator.extrair()
@@ -709,9 +749,17 @@ subpastas: true
 # Sobrescrever arquivos existentes? (padrão: false)
 sobrescrever: false
 
-# Ignorar erros de dependências opcionais (libGL, tesseract)?
-# Se true: continua a extração sem OCR/detecção de tabelas, registra avisos no log
-# Se false: interrompe a execução com erro se dependências estiverem faltando
+# Habilitar OCR (Optical Character Recognition)?
+# Se true (padrão): requer Tesseract instalado. Se não tiver, o processamento para.
+# Se false: ignora OCR se Tesseract não estiver disponível
+ocr: true
+
+# Habilitar detecção avançada de tabelas?
+# Se true (padrão): requer libGL/OpenCV instalado (=sudo apt install libgl1).
+# Se false: ignora tabelas se libGL não estiver disponível
+detectar_tabelas: true
+
+# Ignorar erros de dependências opcionais genéricas?
 # (padrão: true)
 ignorar_dependencias: true
 '''
@@ -750,6 +798,8 @@ def mostrar_uso():
 ║   - pasta_log: Pasta para salvar os logs (padrão: pasta_destino)             ║
 ║   - subpastas: True/False - processar subpastas (padrão: True)               ║
 ║   - sobrescrever: True/False - sobrescrever existentes (padrão: False)       ║
+║   - ocr: True/False - habilitar OCR, requer Tesseract (padrão: True)         ║
+║   - detectar_tabelas: True/False - detectar tabelas (padrão: True)           ║
 ║   - ignorar_dependencias: True/False - ignorar deps opcionais (padrão: True) ║
 ║                                                                              ║
 ║ Saída:                                                                       ║

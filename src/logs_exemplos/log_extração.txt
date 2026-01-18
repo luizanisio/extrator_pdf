@@ -1,32 +1,34 @@
-[2026-01-18 13:07:08] ============================================================
-[2026-01-18 13:07:08] INICIANDO PROCESSAMENTO EM LOTE
-[2026-01-18 13:07:08] ============================================================
-[2026-01-18 13:07:08] Pasta de origem: /mnt/d/wsl_dev/extrator_pdf/src/pdfs_exemplos
-[2026-01-18 13:07:08] Pasta de destino: /mnt/d/wsl_dev/extrator_pdf/src/textos_exemplos
-[2026-01-18 13:07:08] Incluir subpastas: True
-[2026-01-18 13:07:08] Sobrescrever existentes: False
-[2026-01-18 13:07:08] Ignorar dependências opcionais: True
-[2026-01-18 13:07:08] ------------------------------------------------------------
-[2026-01-18 13:07:09] Dependências: libGL=Instalado (v4.13.0), tesseract=tesseract 5.5.0
-[2026-01-18 13:07:09] Informações do ambiente salvas em: /mnt/d/wsl_dev/extrator_pdf/src/logs_exemplos/dicas_ambiente.md
-[2026-01-18 13:07:09] ------------------------------------------------------------
-[2026-01-18 13:07:09] Arquivos PDF encontrados: 3
-[2026-01-18 13:07:09] ------------------------------------------------------------
-[2026-01-18 13:07:09] 
+[2026-01-18 14:11:01] ============================================================
+[2026-01-18 14:11:01] INICIANDO PROCESSAMENTO EM LOTE
+[2026-01-18 14:11:01] ============================================================
+[2026-01-18 14:11:01] Pasta de origem: /mnt/d/wsl_dev/extrator_pdf/src/pdfs_exemplos
+[2026-01-18 14:11:01] Pasta de destino: /mnt/d/wsl_dev/extrator_pdf/src/textos_exemplos
+[2026-01-18 14:11:01] Incluir subpastas: True
+[2026-01-18 14:11:01] Sobrescrever existentes: False
+[2026-01-18 14:11:01] Utilizar OCR: True
+[2026-01-18 14:11:01] Detectar Tabelas: True
+[2026-01-18 14:11:01] Ignorar dependências opcionais: True
+[2026-01-18 14:11:01] ------------------------------------------------------------
+[2026-01-18 14:11:01] Dependências: libGL=Instalado (v4.13.0), tesseract=tesseract 5.5.0
+[2026-01-18 14:11:01] Informações do ambiente salvas em: /mnt/d/wsl_dev/extrator_pdf/src/logs_exemplos/dicas_ambiente.md
+[2026-01-18 14:11:01] ------------------------------------------------------------
+[2026-01-18 14:11:01] Arquivos PDF encontrados: 3
+[2026-01-18 14:11:01] ------------------------------------------------------------
+[2026-01-18 14:11:01] 
 [1/3] Processando: 1904.09675v3.pdf
-[2026-01-18 13:09:50]   -> SUCESSO: 1904.09675v3.md
-[2026-01-18 13:09:50] 
+[2026-01-18 14:13:53]   -> SUCESSO: 1904.09675v3.md
+[2026-01-18 14:13:53] 
 [2/3] Processando: 1910.03771v5.pdf
-[2026-01-18 13:09:59]   -> SUCESSO: 1910.03771v5.md
-[2026-01-18 13:09:59] 
+[2026-01-18 14:14:02]   -> SUCESSO: 1910.03771v5.md
+[2026-01-18 14:14:02] 
 [3/3] Processando: 2408.09869v5.pdf
-[2026-01-18 13:10:12]   -> SUCESSO: 2408.09869v5.md
-[2026-01-18 13:10:12] 
+[2026-01-18 14:14:13]   -> SUCESSO: 2408.09869v5.md
+[2026-01-18 14:14:13] 
 ============================================================
-[2026-01-18 13:10:12] RESUMO DO PROCESSAMENTO
-[2026-01-18 13:10:12] ============================================================
-[2026-01-18 13:10:12] Total de arquivos encontrados: 3
-[2026-01-18 13:10:12] Processados com sucesso: 3
-[2026-01-18 13:10:12] Processados com falha: 0
-[2026-01-18 13:10:12] Ignorados (já existem): 0
-[2026-01-18 13:10:12] ============================================================
+[2026-01-18 14:14:13] RESUMO DO PROCESSAMENTO
+[2026-01-18 14:14:13] ============================================================
+[2026-01-18 14:14:13] Total de arquivos encontrados: 3
+[2026-01-18 14:14:13] Processados com sucesso: 3
+[2026-01-18 14:14:13] Processados com falha: 0
+[2026-01-18 14:14:13] Ignorados (já existem): 0
+[2026-01-18 14:14:13] ============================================================

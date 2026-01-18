@@ -133,9 +133,19 @@ subpastas: true
 # Sobrescrever existentes? (padrão: false)
 sobrescrever: false
 
+# Habilitar OCR (Optical Character Recognition)?
+# Se true (padrão): requer Tesseract instalado. Se não tiver, o processamento para.
+# Se false: ignora OCR se Tesseract não estiver disponível
+ocr: true
+
+# Habilitar detecção avançada de tabelas?
+# Se true (padrão): requer libGL/OpenCV instalado (=sudo apt install libgl1).
+# Se false: ignora tabelas se libGL não estiver disponível
+detectar_tabelas: true
+
 # Ignorar dependências opcionais? (padrão: true)
-# true = continua sem OCR/tabelas, registra aviso no log
-# false = interrompe com erro se dependências faltarem
+# true = continua se faltarem dependências não críticas
+# false = interrompe com erro
 ignorar_dependencias: true
 ```
 

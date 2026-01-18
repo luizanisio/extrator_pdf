@@ -16,8 +16,16 @@ subpastas: true
 # Sobrescrever arquivos existentes? (padrão: false)
 sobrescrever: false
 
-# Ignorar erros de dependências opcionais (libGL, tesseract)?
-# Se true: continua a extração sem OCR/detecção de tabelas, registra avisos no log
-# Se false: interrompe a execução com erro se dependências estiverem faltando
+# Habilitar OCR (Optical Character Recognition)?
+# Se true (padrão): requer Tesseract instalado. Se não tiver, o processamento para.
+# Se false: ignora OCR se Tesseract não estiver disponível
+ocr: true
+
+# Habilitar detecção avançada de tabelas?
+# Se true (padrão): requer libGL/OpenCV instalado (=sudo apt install libgl1).
+# Se false: ignora tabelas se libGL não estiver disponível
+detectar_tabelas: true
+
+# Ignorar erros de dependências opcionais genéricas?
 # (padrão: true)
 ignorar_dependencias: true
